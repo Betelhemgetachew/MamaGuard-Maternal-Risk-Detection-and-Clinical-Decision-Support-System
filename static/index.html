@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maternal Risk Detection System</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤰</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h2>🤰 MamaGuard</h2>
+      <p><em>Maternal Risk Detection System</em></p>
+    </div>
+    <hr class="sb-divider" />
+
+    <nav class="nav" id="nav">
+      <button class="nav-item active" data-page="dashboard"><span>📊</span> Dashboard</button>
+      <button class="nav-item" data-page="new-visit"><span>➕</span> New Visit</button>
+      <button class="nav-item" data-page="vitals"><span>💉</span> Vitals &amp; Prediction</button>
+      <button class="nav-item" data-page="records"><span>📁</span> Patient Records</button>
+      <button class="nav-item" data-page="appointments"><span>📅</span> Appointments</button>
+      <button class="nav-item" data-page="assistant"><span>💬</span> Protocol Assistant</button>
+      <button class="nav-item" data-page="emails"><span>📧</span> Email Log</button>
+      <button class="nav-item" data-page="settings"><span>⚙️</span> Settings</button>
+    </nav>
+
+    <hr class="sb-divider" />
+    <div id="model-status-box" class="sb-status">Checking model …</div>
+
+    <div class="sb-footer">
+      Afya AI Labs<br />
+      Version 2.0.0
+    </div>
+  </aside>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main class="main">
+
+    <!-- ─────────── DASHBOARD ─────────── -->
+    <section class="page active" id="page-dashboard">
+      <div class="section-header">📊 Clinical Overview Dashboard</div>
+
+      <div class="grid-4" id="dash-metrics"></div>
+
+      <hr class="rule" />
+
+      <div class="grid-split">
+        <div>
+          <h4 class="sub-header">🚨 High-Priority Patients</h4>
+          <div id="dash-high-risk"></div>
+        </div>
+        <div>
+          <h4 class="sub-header">📊 Risk Distribution</h4>
+          <div id="dash-distribution" class="chart-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────── NEW VISIT ─────────── -->
+    <section class="page" id="page-new-visit">
+      <div class="section-header">➕ Register New Patient</div>
+      <p class="muted"><strong>Register a new patient or confirm existing patient details.</strong></p>
+      <form id="patient-form" class="card">
+        <div class="grid-2">
+          <div>
+            <label>Full Name *</label>
+            <input name="full_name" placeholder="Jane Doe" required />
+
+            <label>Phone Number *</label>
+            <input name="phone" placeholder="+254712345678" required />
+
+            <label>Email Address *</label>
+            <input name="email" type="email" placeholder="jane.doe@example.com" required />
+
+            <label>Age (years) *</label>
+            <input name="age" type="number" min="14" max="55" value="25" required />
+          </div>
+          <div>
+            <label>Weeks Pregnant</label>
+            <input name="weeks_pregnant" type="number" min="0" max="42" value="20" />
+
+            <label>Previous Pregnancies</label>
+            <input name="prev_pregnancies" type="number" min="0" max="10" value="0" />
+
+            <label class="check">
+              <input name="family_hypertension" type="checkbox" />
+              Family History of Hypertension
+            </label>
+          </div>
+        </div>
+        <button class="btn btn-block" type="submit">💾 Save Patient</button>
+        <div id="patient-form-msg"></div>
+      </form>
+    </section>
+
+    <!-- ─────────── VITALS ENTRY & PREDICTION ─────────── -->
+     <section class="page" id="page-vitals">
+      <div class="section-header">💉 Vitals Entry &amp; AI Risk Prediction</div>
+      <label>🔍 Search by name or ID</label>
+      <input id="vitals-search" placeholder="Start typing…" />
+        <div id="vitals-wrap">
+          <label>Select Patient</label>
+          <select id="vitals-patient"></select>
+
+          <hr class="rule" />
+          <h4 class="sub-header">📋 Enter Today's Vitals</h4>
+
+          <form id="visit-form" class="card">
+            <div class="grid-3">
+              <div>
+                <label>Systolic BP (mmHg) *</label>
+                <input name="systolic_bp" type="number" min="60" max="220" value="120" required />
+                <label>Diastolic BP (mmHg) *</label>
+                <input name="diastolic_bp" type="number" min="40" max="140" value="80" required />
+              </div>
+              <div>
+                <label>Blood Sugar (mmol/L) *</label>
+                <input name="blood_sugar" type="number" step="0.1" min="3" max="20" value="7.5" required />
+                <label>Body Temp (°C) *</label>
+                <input name="body_temp" type="number" step="0.1" min="35" max="40" value="36.8" required />
+              </div>
+              <div>
+                <label>Heart Rate (bpm) *</label>
+                <input name="heart_rate" type="number" min="40" max="160" value="76" required />
+                <label>Weight (kg)</label>
+                <input name="weight_kg" type="number" step="0.5" min="35" max="150" value="65" />
+                <label>Height (cm)</label>
+                <input name="height_cm" type="number" step="0.5" min="140" max="200" value="165" />
+                <div id="bmi-readout"></div>
+                <label class="check">
+                  <input name="proteinuria" type="checkbox" />
+                  Proteinuria Detected?
+                </label>
+              </div>
+            </div>
+
+            <label>Clinical Notes</label>
+            <textarea name="notes" rows="3" placeholder="Any observations…"></textarea>
+
+            <div id="vitals-alerts"></div>
+
+            <hr class="rule" />
+            <button class="btn btn-primary btn-block" type="submit">🚀 Save Visit &amp; Run AI Assessment</button>
+          </form>
+
+          <div id="assessment"></div>
+      </div>
+
+    </section>
+
+    <!-- ─────────── PATIENT RECORDS ─────────── -->
+    <section class="page" id="page-records">
+      <div class="section-header">Patient Records &amp; History</div>
+      <label>🔍 Search by name or ID</label>
+      <input id="records-search" placeholder="Start typing…" />
+      <label>Select patient to view</label>
+      <select id="records-select"></select>
+      <div id="records-detail"></div>
+    </section>
+
+    <!-- ─────────── APPOINTMENTS ─────────── -->
+    <section class="page" id="page-appointments">
+      <div class="section-header">📅 Appointment Management</div>
+
+      <div class="tabs" data-tabs="appt">
+        <button class="tab active" data-tab="upcoming">📌 Upcoming</button>
+        <button class="tab" data-tab="mark">✅ Mark Attendance</button>
+        <button class="tab" data-tab="book">➕ Book Appointment</button>
+      </div>
+
+      <div class="tab-panel active" data-panel="upcoming">
+        <div id="appt-upcoming"></div>
+      </div>
+
+      <div class="tab-panel" data-panel="mark">
+        <div id="appt-mark"></div>
+      </div>
+
+      <div class="tab-panel" data-panel="book">
+        <form id="book-form" class="card">
+          <label>Patient</label>
+          <select name="patient_id" id="book-patient"></select>
+          <label>Appointment Date</label>
+          <input name="scheduled_date" type="date" required />
+          <label>Reason</label>
+          <input name="reason" value="Antenatal follow-up" />
+          <button class="btn btn-block" type="submit">Book &amp; Send Reminder</button>
+          <div id="book-msg"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ─────────── PROTOCOL ASSISTANT (RAG) ─────────── -->
+    <section class="page" id="page-assistant">
+      <div class="section-header">💬 Protocol Assistant</div>
+      <div class="kb-banner" id="kb-banner">Checking knowledge base …</div>
+
+      <div class="chat-shell">
+        <div class="chat-log" id="chat-log">
+          <div class="msg assistant">
+            <div class="bubble">
+              <p>Ask me anything from the <strong>Basic Obstetric Protocols 2026</strong>.
+                 I answer only from that document — if it isn't in there, I'll say so.</p>
+              <div class="chips">
+                <button class="chip">What is the management of severe pre-eclampsia?</button>
+                <button class="chip">Dose of magnesium sulphate for eclampsia?</button>
+                <button class="chip">How is postpartum haemorrhage managed?</button>
+                <button class="chip">Iron and folic acid supplementation in pregnancy?</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form class="chat-input" id="chat-form">
+          <input id="chat-text" placeholder="Ask a clinical protocol question…" autocomplete="off" />
+          <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ─────────── EMAIL LOG ─────────── -->
+    <section class="page" id="page-emails">
+      <div class="section-header">Email Communication Log</div>
+      <div id="email-log"></div>
+    </section>
+
+    <!-- ─────────── SETTINGS ─────────── -->
+    <section class="page" id="page-settings">
+      <div class="section-header">⚙️ System Settings</div>
+
+      <div class="tabs" data-tabs="settings">
+        <button class="tab active" data-tab="model">🧠 Model</button>
+        <button class="tab" data-tab="seed">🌱 Seed Demo Data</button>
+        <button class="tab" data-tab="kb">📚 Knowledge Base</button>
+      </div>
+
+      <div class="tab-panel active" data-panel="model">
+        <p class="muted"><strong>Retrain the AI model on fresh synthetic data:</strong></p>
+        <div class="card">
+          <label>Training samples: <output id="train-out">1500</output></label>
+          <input id="train-slider" type="range" min="500" max="3000" step="100" value="1500" />
+          <button class="btn btn-primary btn-block" id="btn-train">🔁 Retrain Model</button>
+          <div id="train-msg"></div>
+        </div>
+        <hr class="rule" />
+        <div class="markdown">
+          <p><strong>Model Architecture:</strong></p>
+          <ul>
+            <li>🌲 Primary: XGBoost (falls back to RandomForest if XGBoost unavailable)</li>
+            <li>🔍 Explainability: SHAP TreeExplainer (falls back to feature importance × delta)</li>
+            <li>📊 Classes: <code>low risk</code> / <code>mid risk</code> / <code>high risk</code></li>
+            <li>🧮 Features: Age, BP, Blood Sugar, Temp, Heart Rate, Pulse Pressure, MAP, BP Velocity, Weight Velocity, Family History, Proteinuria</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-panel="seed">
+        <p class="muted"><strong>Populate the database with demo patients for testing:</strong></p>
+        <div class="card">
+          <label>Number of demo patients: <output id="seed-out">10</output></label>
+          <input id="seed-slider" type="range" min="5" max="50" step="1" value="10" />
+          <button class="btn btn-block" id="btn-seed">🌱 Seed Demo Patients</button>
+          <div id="seed-msg"></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-panel="kb">
+        <p class="muted"><strong>Retrieval-augmented protocol knowledge base:</strong></p>
+        <div class="card" id="kb-detail">Loading …</div>
+        <div class="markdown">
+          <p>The knowledge base is built offline from the source PDF:</p>
+          <pre><code>python ingest.py            # build (idempotent)
+python ingest.py --rebuild  # wipe and rebuild
+python ingest.py --inspect  # preview chunks, write nothing</code></pre>
+          <p>Chunking is dosage-aware: a split is never allowed to land inside a
+             dose expression, so a retrieved passage can never surface half a dose.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast-host"></div>
+
+<script src="/script.js"></script>
+</body>
+</html>
