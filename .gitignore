@@ -1,0 +1,12 @@
+/__pychache__
+.venv
+.python-version
+uv.lock
+pyproject.toml
+.env
+*.pdf
+*.claude
+
+# Vector store built by ingest.py (rebuildable, ~2 MB)
+chroma_db/
+__pycache__/
