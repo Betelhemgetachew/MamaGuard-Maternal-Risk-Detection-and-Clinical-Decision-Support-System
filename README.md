@@ -2,6 +2,8 @@
 
 A prototype decision-support tool for antenatal clinics. A nurse records a mother's vitals, and MamaGuard returns a **risk tier with an explanation**, books the **next follow-up automatically**, keeps the mother engaged with **supportive email reminders**, and lets staff ask a **protocol assistant** questions that are answered only from the Kenya Ministry of Health obstetric protocols.
 
+**Live demo:** https://mamaguard-7p1h.onrender.com (free hosting, so the first load can take up to a minute; the demo patients are synthetic and reset on restart).
+
 > ⚠️ **Research prototype.** The risk model is trained on synthetic data and has not been clinically validated. It is not for use in patient care.
 
 <!-- Add a screenshot or GIF of the dashboard here: ![MamaGuard dashboard](docs/screenshot.png) -->
