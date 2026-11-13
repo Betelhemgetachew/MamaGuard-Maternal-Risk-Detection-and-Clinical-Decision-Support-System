@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Maternal Risk Detection System</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤰</text></svg>" />
+  <title>MamaGuard: Maternal Risk Detection</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e6e6a'/%3E%3Cpath d='M6 17h5l2-6 4 12 2-6h7' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
@@ -17,20 +17,22 @@
   <!-- ══════════════ SIDEBAR ══════════════ -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <h2>🤰 MamaGuard</h2>
-      <p><em>Maternal Risk Detection System</em></p>
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h4l2-6 4 12 2-6h6"/></svg></div>
+      <div>
+        <h2>MamaGuard</h2>
+        <p>Maternal risk detection</p>
+      </div>
     </div>
-    <hr class="sb-divider" />
 
     <nav class="nav" id="nav">
-      <button class="nav-item active" data-page="dashboard"><span>📊</span> Dashboard</button>
-      <button class="nav-item" data-page="new-visit"><span>➕</span> New Visit</button>
-      <button class="nav-item" data-page="vitals"><span>💉</span> Vitals &amp; Prediction</button>
-      <button class="nav-item" data-page="records"><span>📁</span> Patient Records</button>
-      <button class="nav-item" data-page="appointments"><span>📅</span> Appointments</button>
-      <button class="nav-item" data-page="assistant"><span>💬</span> Protocol Assistant</button>
-      <button class="nav-item" data-page="emails"><span>📧</span> Email Log</button>
-      <button class="nav-item" data-page="settings"><span>⚙️</span> Settings</button>
+      <button class="nav-item active" data-page="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></button>
+      <button class="nav-item" data-page="new-visit"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/><path d="M19 8v6M16 11h6"/></svg><span>New Visit</span></button>
+      <button class="nav-item" data-page="vitals"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span>Vitals &amp; Prediction</span></button>
+      <button class="nav-item" data-page="records"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Patient Records</span></button>
+      <button class="nav-item" data-page="appointments"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Appointments</span></button>
+      <button class="nav-item" data-page="assistant"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z"/></svg><span>Protocol Assistant</span></button>
+      <button class="nav-item" data-page="emails"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span>Email Log</span></button>
+      <button class="nav-item" data-page="settings"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></button>
     </nav>
 
     <hr class="sb-divider" />
@@ -47,7 +49,7 @@
 
     <!-- ─────────── DASHBOARD ─────────── -->
     <section class="page active" id="page-dashboard">
-      <div class="section-header">📊 Clinical Overview Dashboard</div>
+      <header class="page-head"><h1>Clinical overview</h1><p>Today's caseload, high-priority patients and risk distribution.</p></header>
 
       <div class="grid-4" id="dash-metrics"></div>
 
@@ -55,11 +57,11 @@
 
       <div class="grid-split">
         <div>
-          <h4 class="sub-header">🚨 High-Priority Patients</h4>
+          <h4 class="sub-header">High-priority patients</h4>
           <div id="dash-high-risk"></div>
         </div>
         <div>
-          <h4 class="sub-header">📊 Risk Distribution</h4>
+          <h4 class="sub-header">Risk distribution</h4>
           <div id="dash-distribution" class="chart-box"></div>
         </div>
       </div>
@@ -67,8 +69,7 @@
 
     <!-- ─────────── NEW VISIT ─────────── -->
     <section class="page" id="page-new-visit">
-      <div class="section-header">➕ Register New Patient</div>
-      <p class="muted"><strong>Register a new patient or confirm existing patient details.</strong></p>
+      <header class="page-head"><h1>Register patient</h1><p>Add a new patient or update an existing patient's details.</p></header>
       <form id="patient-form" class="card">
         <div class="grid-2">
           <div>
@@ -97,22 +98,22 @@
             </label>
           </div>
         </div>
-        <button class="btn btn-block" type="submit">💾 Save Patient</button>
+        <button class="btn btn-primary btn-block" type="submit">Save patient</button>
         <div id="patient-form-msg"></div>
       </form>
     </section>
 
     <!-- ─────────── VITALS ENTRY & PREDICTION ─────────── -->
      <section class="page" id="page-vitals">
-      <div class="section-header">💉 Vitals Entry &amp; AI Risk Prediction</div>
-      <label>🔍 Search by name or ID</label>
+      <header class="page-head"><h1>Vitals and risk assessment</h1><p>Record today's vitals and get an explained risk assessment.</p></header>
+      <label>Search by name or ID</label>
       <input id="vitals-search" placeholder="Start typing…" />
         <div id="vitals-wrap">
           <label>Select Patient</label>
           <select id="vitals-patient"></select>
 
           <hr class="rule" />
-          <h4 class="sub-header">📋 Enter Today's Vitals</h4>
+          <h4 class="sub-header">Today's vitals</h4>
 
           <form id="visit-form" class="card">
             <div class="grid-3">
@@ -138,7 +139,7 @@
                 <div id="bmi-readout"></div>
                 <label class="check">
                   <input name="proteinuria" type="checkbox" />
-                  Proteinuria Detected?
+                  Proteinuria detected
                 </label>
               </div>
             </div>
@@ -149,7 +150,7 @@
             <div id="vitals-alerts"></div>
 
             <hr class="rule" />
-            <button class="btn btn-primary btn-block" type="submit">🚀 Save Visit &amp; Run AI Assessment</button>
+            <button class="btn btn-primary btn-block" type="submit">Save visit and run assessment</button>
           </form>
 
           <div id="assessment"></div>
@@ -159,8 +160,8 @@
 
     <!-- ─────────── PATIENT RECORDS ─────────── -->
     <section class="page" id="page-records">
-      <div class="section-header">Patient Records &amp; History</div>
-      <label>🔍 Search by name or ID</label>
+      <header class="page-head"><h1>Patient records</h1><p>Visit history, trends and the latest assessment for each patient.</p></header>
+      <label>Search by name or ID</label>
       <input id="records-search" placeholder="Start typing…" />
       <label>Select patient to view</label>
       <select id="records-select"></select>
@@ -169,12 +170,12 @@
 
     <!-- ─────────── APPOINTMENTS ─────────── -->
     <section class="page" id="page-appointments">
-      <div class="section-header">📅 Appointment Management</div>
+      <header class="page-head"><h1>Appointments</h1><p>Upcoming visits, attendance and new bookings.</p></header>
 
       <div class="tabs" data-tabs="appt">
-        <button class="tab active" data-tab="upcoming">📌 Upcoming</button>
-        <button class="tab" data-tab="mark">✅ Mark Attendance</button>
-        <button class="tab" data-tab="book">➕ Book Appointment</button>
+        <button class="tab active" data-tab="upcoming">Upcoming</button>
+        <button class="tab" data-tab="mark">Mark attendance</button>
+        <button class="tab" data-tab="book">Book appointment</button>
       </div>
 
       <div class="tab-panel active" data-panel="upcoming">
@@ -193,7 +194,7 @@
           <input name="scheduled_date" type="date" required />
           <label>Reason</label>
           <input name="reason" value="Antenatal follow-up" />
-          <button class="btn btn-block" type="submit">Book &amp; Send Reminder</button>
+          <button class="btn btn-primary btn-block" type="submit">Book and send reminder</button>
           <div id="book-msg"></div>
         </form>
       </div>
@@ -201,7 +202,7 @@
 
     <!-- ─────────── PROTOCOL ASSISTANT (RAG) ─────────── -->
     <section class="page" id="page-assistant">
-      <div class="section-header">💬 Protocol Assistant</div>
+      <header class="page-head"><h1>Protocol assistant</h1><p>Answers drawn only from the Ministry of Health Basic Obstetric Protocols.</p></header>
       <div class="kb-banner" id="kb-banner">Checking knowledge base …</div>
 
       <div class="chat-shell">
@@ -229,18 +230,18 @@
 
     <!-- ─────────── EMAIL LOG ─────────── -->
     <section class="page" id="page-emails">
-      <div class="section-header">Email Communication Log</div>
+      <header class="page-head"><h1>Email log</h1><p>Reminders and messages sent to patients.</p></header>
       <div id="email-log"></div>
     </section>
 
     <!-- ─────────── SETTINGS ─────────── -->
     <section class="page" id="page-settings">
-      <div class="section-header">⚙️ System Settings</div>
+      <header class="page-head"><h1>Settings</h1><p>Model training, demo data and the protocol knowledge base.</p></header>
 
       <div class="tabs" data-tabs="settings">
-        <button class="tab active" data-tab="model">🧠 Model</button>
-        <button class="tab" data-tab="seed">🌱 Seed Demo Data</button>
-        <button class="tab" data-tab="kb">📚 Knowledge Base</button>
+        <button class="tab active" data-tab="model">Model</button>
+        <button class="tab" data-tab="seed">Demo data</button>
+        <button class="tab" data-tab="kb">Knowledge base</button>
       </div>
 
       <div class="tab-panel active" data-panel="model">
@@ -248,17 +249,17 @@
         <div class="card">
           <label>Training samples: <output id="train-out">1500</output></label>
           <input id="train-slider" type="range" min="500" max="3000" step="100" value="1500" />
-          <button class="btn btn-primary btn-block" id="btn-train">🔁 Retrain Model</button>
+          <button class="btn btn-primary btn-block" id="btn-train">Retrain model</button>
           <div id="train-msg"></div>
         </div>
         <hr class="rule" />
         <div class="markdown">
           <p><strong>Model Architecture:</strong></p>
           <ul>
-            <li>🌲 Primary: XGBoost (falls back to RandomForest if XGBoost unavailable)</li>
-            <li>🔍 Explainability: SHAP TreeExplainer (falls back to feature importance × delta)</li>
-            <li>📊 Classes: <code>low risk</code> / <code>mid risk</code> / <code>high risk</code></li>
-            <li>🧮 Features: Age, BP, Blood Sugar, Temp, Heart Rate, Pulse Pressure, MAP, BP Velocity, Weight Velocity, Family History, Proteinuria</li>
+            <li>Primary: XGBoost (falls back to RandomForest if XGBoost unavailable)</li>
+            <li>Explainability: SHAP TreeExplainer (falls back to feature importance × delta)</li>
+            <li>Classes: <code>low risk</code> / <code>mid risk</code> / <code>high risk</code></li>
+            <li>Features: Age, BP, Blood Sugar, Temp, Heart Rate, Pulse Pressure, MAP, BP Velocity, Weight Velocity, Family History, Proteinuria</li>
           </ul>
         </div>
       </div>
@@ -268,7 +269,7 @@
         <div class="card">
           <label>Number of demo patients: <output id="seed-out">10</output></label>
           <input id="seed-slider" type="range" min="5" max="50" step="1" value="10" />
-          <button class="btn btn-block" id="btn-seed">🌱 Seed Demo Patients</button>
+          <button class="btn btn-primary btn-block" id="btn-seed">Add demo patients</button>
           <div id="seed-msg"></div>
         </div>
       </div>

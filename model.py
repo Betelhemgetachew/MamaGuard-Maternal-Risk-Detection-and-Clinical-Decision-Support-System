@@ -51,17 +51,17 @@ CONDITION_MAP = {
 
 ACTION_MAP = {
     "high risk": (
-        "🚨 URGENT: Schedule follow-up within 3 days. "
+        "URGENT: Schedule follow-up within 3 days. "
         "Consider low-dose aspirin. Order urine protein test & CBC. "
         "Refer to specialist if BP remains elevated."
     ),
     "mid risk": (
-        "⚠️ MONITOR: Schedule follow-up in 1–2 weeks. "
+        "MONITOR: Schedule follow-up in 1–2 weeks. "
         "Glucose tolerance test recommended. "
         "Increase dietary counselling. Monitor weight weekly."
     ),
     "low risk": (
-        "✅ ROUTINE: Next antenatal visit in 4 weeks. "
+        "ROUTINE: Next antenatal visit in 4 weeks. "
         "Continue iron & folic acid supplements. "
         "Encourage hydration and balanced diet."
     ),

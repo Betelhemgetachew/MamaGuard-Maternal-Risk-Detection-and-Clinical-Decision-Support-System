@@ -6,8 +6,8 @@ pyproject.toml
 *.pdf
 *.claude
 
-# chroma_db/ is committed on purpose: it is the protocol knowledge base
-# (built by ingest.py from the public MoH protocol PDF, which is not in the repo)
+# Knowledge base built locally by ingest.py from the MoH protocol PDF
+chroma_db/
 __pycache__/
 
 # Generated at runtime (rebuild with: python model.py / python app.py)
@@ -15,4 +15,3 @@ __pycache__/
 *.sqlite3
 model.pkl
 label_encoder.pkl
-!chroma_db/chroma.sqlite3

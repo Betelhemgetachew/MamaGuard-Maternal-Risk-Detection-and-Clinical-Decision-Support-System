@@ -10,11 +10,20 @@
 
 /* ─────────────────────────── constants ─────────────────────────── */
 
-const RISK_COLOUR = { 'high risk': '#ef4444', 'mid risk': '#f59e0b', 'low risk': '#22c55e' };
-const RISK_BG     = { 'high risk': '#fef2f2', 'mid risk': '#fffbeb', 'low risk': '#f0fdf4' };
-const RISK_EMOJI  = { 'high risk': '🔴',      'mid risk': '🟡',      'low risk': '🟢' };
+const RISK_COLOUR = { 'high risk': '#c0392b', 'mid risk': '#b7791f', 'low risk': '#2f855a' };
+const RISK_BG     = { 'high risk': '#fdeceb', 'mid risk': '#fdf3e1', 'low risk': '#e7f4ec' };
+const RISK_EMOJI  = {
+  'high risk': '<span class="dot" style="background:#c0392b"></span>',
+  'mid risk':  '<span class="dot" style="background:#b7791f"></span>',
+  'low risk':  '<span class="dot" style="background:#2f855a"></span>',
+};
 const ALERT_CLASS = { 'high risk': 'alert-high', 'mid risk': 'alert-mid', 'low risk': 'alert-low' };
-const STATUS_ICON = { sent: '✅', mock_success: '🔵', failed: '❌', queued: '⏳' };
+const STATUS_ICON = {
+  sent: '<span class="status status-sent">Sent</span>',
+  mock_success: '<span class="status status-mock">Logged</span>',
+  failed: '<span class="status status-failed">Failed</span>',
+  queued: '<span class="status status-queued">Queued</span>',
+};
 
 const NOT_FOUND = 'WARNING: Protocol not found in verified database.';
 
@@ -30,7 +39,12 @@ function esc(value) {
   ));
 }
 
-function colourOf(risk) { return RISK_COLOUR[risk] || '#6b7280'; }
+function colourOf(risk) { return RISK_COLOUR[risk] || '#667085'; }
+
+/** Two-letter initials for avatars, e.g. "Jane Wanjiru" -> "JW". */
+function initials(name) {
+  return String(name || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+}
 
 async function api(path, options = {}) {
   const res = await fetch(path, {
@@ -92,9 +106,8 @@ function metricCard(label, value, sub, colour) {
 
 function riskBadge(risk) {
   const colour = colourOf(risk);
-  return `<span class="risk-badge" style="background:${RISK_BG[risk] || '#f9fafb'};
-          color:${colour};border:2px solid ${colour}">
-            ${RISK_EMOJI[risk] || '⚪'} ${esc(String(risk).toUpperCase())}
+  return `<span class="risk-badge" style="background:${RISK_BG[risk] || '#f2f4f7'};color:${colour}">
+            ${RISK_EMOJI[risk] || ''}${esc(String(risk).toUpperCase())}
           </span>`;
 }
 
@@ -137,7 +150,7 @@ function shapChart(reasons) {
 
   return `
     <div class="chart-box">
-      <div class="chart-title">🔍 AI Reasoning — Feature Contributions</div>
+      <div class="chart-title">What drove this assessment</div>
       ${rows}
       <div class="legend">
         <span class="key"><span class="swatch" style="background:${RISK_COLOUR['high risk']}"></span>Increases risk</span>
@@ -181,7 +194,7 @@ function donutChart(distribution) {
     angle = end;
 
     return `
-      <path d="${d}" fill="${colourOf(risk)}" opacity="0.9"><title>${esc(risk)}: ${count}</title></path>
+      <path d="${d}" fill="${colourOf(risk)}" stroke="#ffffff" stroke-width="2"><title>${esc(risk)}: ${count}</title></path>
       <text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}"
             dominant-baseline="middle" font-size="11">${Math.round((count / total) * 100)}%</text>`;
   }).join('');
@@ -190,9 +203,9 @@ function donutChart(distribution) {
     <span class="key"><span class="swatch" style="background:${colourOf(risk)}"></span>${esc(titleCase(risk))} (${count})</span>`).join('');
 
   return `
-    <svg viewBox="0 0 220 220" role="img" aria-label="Risk distribution">
+    <svg viewBox="-44 -18 308 256" role="img" aria-label="Risk distribution" style="max-width:380px;margin:0 auto">
       ${arcs}
-      <text x="${CX}" y="${CY - 6}" text-anchor="middle" font-size="26" font-weight="700" fill="#111827">${total}</text>
+      <text x="${CX}" y="${CY - 6}" text-anchor="middle" font-size="26" font-weight="700" fill="#101828">${total}</text>
       <text x="${CX}" y="${CY + 14}" text-anchor="middle" font-size="11">patients</text>
     </svg>
     <div class="legend">${legend}</div>`;
@@ -243,16 +256,16 @@ function trendChart(visits, patientName) {
     const gy = yBp(value);
     return `
       <line x1="${PAD.left}" y1="${gy.toFixed(1)}" x2="${W - PAD.right}" y2="${gy.toFixed(1)}"
-            stroke="#eef0f4" stroke-width="1" />
+            stroke="#e4e7ec" stroke-width="1" />
       <text x="${PAD.left - 8}" y="${gy.toFixed(1)}" text-anchor="end" dominant-baseline="middle"
-            font-size="10">${Math.round(value)}</text>`;
+            font-size="12">${Math.round(value)}</text>`;
   }).join('');
 
   // Right axis ticks (blood sugar).
   const bsAxis = Array.from({ length: 4 }, (_, i) => {
     const value = bsMin + ((bsMax - bsMin) * i) / 3;
     return `<text x="${W - PAD.right + 8}" y="${yBs(value).toFixed(1)}" dominant-baseline="middle"
-              font-size="10" fill="#6366f1">${value.toFixed(1)}</text>`;
+              font-size="12" fill="#6250d6">${value.toFixed(1)}</text>`;
   }).join('');
 
   const xLabels = rows.map((r, i) => {
@@ -260,7 +273,7 @@ function trendChart(visits, patientName) {
     const step = Math.ceil(rows.length / 8);
     if (i % step !== 0 && i !== rows.length - 1) return '';
     return `<text x="${x(i).toFixed(1)}" y="${H - PAD.bottom + 18}" text-anchor="middle"
-              font-size="10">${esc(String(r.visit_date).slice(5))}</text>`;
+              font-size="12">${esc(String(r.visit_date).slice(5))}</text>`;
   }).join('');
 
   const safeTop = yBp(Math.min(135, bpMax));
@@ -268,29 +281,29 @@ function trendChart(visits, patientName) {
 
   return `
     <div class="chart-box">
-      <div class="chart-title">📈 ${esc(patientName)}'s Health Trend</div>
+      <div class="chart-title">${esc(patientName)}: vitals over time</div>
       <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Vitals trend">
         <rect x="${PAD.left}" y="${safeTop.toFixed(1)}" width="${plotW}"
               height="${Math.max(0, safeBottom - safeTop).toFixed(1)}"
-              fill="#22c55e" opacity="0.06" />
+              fill="#2f855a" opacity="0.06" />
         ${grid}
         ${bsAxis}
-        <line x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${PAD.top + plotH}" stroke="#d1d5db" />
-        <line x1="${PAD.left}" y1="${PAD.top + plotH}" x2="${W - PAD.right}" y2="${PAD.top + plotH}" stroke="#d1d5db" />
-        ${series('systolic_bp', yBp, '#ef4444')}
-        ${series('diastolic_bp', yBp, '#f59e0b')}
-        ${series('blood_sugar', yBs, '#6366f1')}
+        <line x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${PAD.top + plotH}" stroke="#d0d5dd" />
+        <line x1="${PAD.left}" y1="${PAD.top + plotH}" x2="${W - PAD.right}" y2="${PAD.top + plotH}" stroke="#d0d5dd" />
+        ${series('systolic_bp', yBp, '#2a78d6')}
+        ${series('diastolic_bp', yBp, '#eb6834')}
+        ${series('blood_sugar', yBs, '#6250d6')}
         ${xLabels}
-        <text x="14" y="${PAD.top + plotH / 2}" font-size="10" text-anchor="middle"
+        <text x="14" y="${PAD.top + plotH / 2}" font-size="12" text-anchor="middle"
               transform="rotate(-90 14 ${PAD.top + plotH / 2})">Blood Pressure (mmHg)</text>
-        <text x="${W - 12}" y="${PAD.top + plotH / 2}" font-size="10" text-anchor="middle" fill="#6366f1"
+        <text x="${W - 12}" y="${PAD.top + plotH / 2}" font-size="12" text-anchor="middle" fill="#6250d6"
               transform="rotate(90 ${W - 12} ${PAD.top + plotH / 2})">Blood Sugar (mmol/L)</text>
       </svg>
       <div class="legend">
-        <span class="key"><span class="swatch" style="background:#ef4444"></span>Systolic BP</span>
-        <span class="key"><span class="swatch" style="background:#f59e0b"></span>Diastolic BP</span>
-        <span class="key"><span class="swatch" style="background:#6366f1"></span>Blood Sugar</span>
-        <span class="key"><span class="swatch" style="background:#22c55e;opacity:.35"></span>Safe BP zone</span>
+        <span class="key"><span class="swatch" style="background:#2a78d6"></span>Systolic BP</span>
+        <span class="key"><span class="swatch" style="background:#eb6834"></span>Diastolic BP</span>
+        <span class="key"><span class="swatch" style="background:#6250d6"></span>Blood Sugar</span>
+        <span class="key"><span class="swatch" style="background:#2f855a;opacity:.35"></span>Safe BP zone</span>
       </div>
     </div>`;
 }
@@ -348,27 +361,27 @@ async function loadDashboard() {
   setModelStatus(stats.model_ready);
 
   box.innerHTML =
-    metricCard('👩 Registered Patients', stats.patients, 'Total in system', '#6366f1') +
-    metricCard('🔴 High Risk', stats.high_risk, 'Require urgent attention', '#ef4444') +
-    metricCard("🏥 Today's Visits", stats.today_visits, `Date: ${stats.today}`, '#0ea5e9') +
-    metricCard('📅 Pending Appointments', stats.pending_appointments, 'Upcoming', '#22c55e');
+    metricCard('Registered patients', stats.patients, 'Total in system', '#0e6e6a') +
+    metricCard('High risk', stats.high_risk, 'Need urgent attention', '#c0392b') +
+    metricCard("Today's visits", stats.today_visits, `Date: ${stats.today}`, '#2563eb') +
+    metricCard('Pending appointments', stats.pending_appointments, 'Upcoming', '#b7791f');
 
   const list = $('#dash-high-risk');
   if (!stats.high_risk_patients.length) {
-    list.innerHTML = '<div class="alert-low">No high-risk patients at this time. 🎉</div>';
+    list.innerHTML = '<div class="alert-low">No high-risk patients at this time.</div>';
   } else {
     list.innerHTML = stats.high_risk_patients.map((p) => {
       const score = Math.round(p.risk_score || 0);
       const action = String(p.suggested_action || '').slice(0, 80);
       return `
         <div class="patient-card">
-          <div class="avatar" style="background:#fef2f2">🔴</div>
+          <div class="avatar avatar-high">${esc(initials(p.full_name))}</div>
           <div class="pc-grow">
             <div class="pc-name">${esc(p.full_name)}</div>
             <div class="pc-meta">ID: ${esc(p.patient_id)} · Risk score: ${score}%</div>
             <div class="pc-note">${esc(action)}…</div>
           </div>
-          <span class="pill" style="background:#fef2f2;color:#ef4444;border:1.5px solid #ef4444">${score}%</span>
+          <span class="pill" style="background:#fdeceb;color:#c0392b">${score}%</span>
         </div>`;
     }).join('');
   }
@@ -379,7 +392,7 @@ async function loadDashboard() {
 function setModelStatus(ready) {
   const box = $('#model-status-box');
   box.className = `sb-status ${ready ? 'ok' : 'warn'}`;
-  box.textContent = ready ? '✅ AI model ready' : '⚠️ Model not trained — see Settings';
+  box.textContent = ready ? 'Risk model ready' : 'Model not trained: see Settings';
 }
 
 /* ─────────────────────────── page: new visit ─────────────────────────── */
@@ -455,10 +468,10 @@ function initNewVisit() {
     busy(button, true, 'Saving …');
     try {
       const out = await post('/api/patients', payload);
-      msg.innerHTML = `<div class="alert-low">✅ ${esc(out.message)}</div>
+      msg.innerHTML = `<div class="alert-low">${esc(out.message)}</div>
                        <div class="alert-info">Go to the Vitals &amp; Prediction page to record this visit.</div>`;
       form.reset();
-      $('#patient-form-msg').innerHTML = `<div class="alert-low">✅ ${esc(out.message)}</div>`;
+      $('#patient-form-msg').innerHTML = `<div class="alert-low">${esc(out.message)}</div>`;
       await loadNewVisit();
     } catch (err) {
       msg.innerHTML = `<div class="alert-high">${esc(err.message)}</div>`;
@@ -496,7 +509,7 @@ function initVitalsPage() {
 
     const button = $('button[type=submit]', visitForm);
     const panel = $('#assessment');
-    busy(button, true, '🧠 AI engine analysing …');
+    busy(button, true, 'Running assessment …');
     panel.innerHTML = '';
     try {
       const out = await post('/api/visits', payload);
@@ -527,20 +540,20 @@ function updateVitalsHints() {
     const bmi = weight / ((height / 100) ** 2);
     bmiHtml = `<p style="margin:.5rem 0 0"><strong>BMI:</strong> ${bmi.toFixed(1)} kg/m²</p>`;
     if (bmi < 18.5 || bmi > 24.9) {
-      bmiHtml += `<div class="alert-mid">⚠️ BMI ${bmi.toFixed(1)} is outside the healthy range (18.5–24.9).</div>`;
+      bmiHtml += `<div class="alert-mid">BMI ${bmi.toFixed(1)} is outside the healthy range (18.5–24.9).</div>`;
     }
   }
   $('#bmi-readout').innerHTML = bmiHtml;
 
   const alerts = [];
   if (systolic >= 160 || diastolic >= 110) {
-    alerts.push(`<div class="rt-alert">⚡ CRITICAL BP DETECTED — ${systolic}/${diastolic} mmHg.
+    alerts.push(`<div class="rt-alert">Critical blood pressure — ${systolic}/${diastolic} mmHg.
                  Immediate medical attention required!</div>`);
   } else if (systolic >= 140 || diastolic >= 90) {
-    alerts.push(`<div class="alert-mid">⚠️ Elevated BP: ${systolic}/${diastolic} mmHg. Monitor closely.</div>`);
+    alerts.push(`<div class="alert-mid">Elevated BP: ${systolic}/${diastolic} mmHg. Monitor closely.</div>`);
   }
   if (bs > 11.0) {
-    alerts.push(`<div class="alert-mid">⚠️ High blood sugar: ${bs} mmol/L — Gestational Diabetes risk.</div>`);
+    alerts.push(`<div class="alert-mid">High blood sugar: ${bs} mmol/L — Gestational Diabetes risk.</div>`);
   }
   $('#vitals-alerts').innerHTML = alerts.join('');
 }
@@ -552,20 +565,20 @@ function renderAssessment(out) {
 
   return `
     <hr class="rule" />
-    <h3 class="sub-header">🤖 AI Assessment Results</h3>
+    <h3 class="sub-header">Assessment</h3>
     <div class="grid-3">
       <div class="card">
-        <strong>Risk Classification</strong>
+        <strong>Risk classification</strong>
         <p>${riskBadge(r.risk_level)}</p>
-        <div class="metric-label">Risk Score</div>
+        <div class="metric-label">Risk score</div>
         <div class="metric-value">${esc(r.risk_score)}%</div>
       </div>
       <div class="card">
-        <strong>Probability Breakdown</strong>
+        <strong>Probability breakdown</strong>
         <div style="margin-top:.6rem">${probabilityMeters(r.probabilities)}</div>
       </div>
       <div class="card">
-        <strong>Top Risk Conditions</strong>
+        <strong>Conditions to check</strong>
         <ul>${r.top_risks.map((c) => `<li>${esc(c)}</li>`).join('')}${velocity}</ul>
       </div>
     </div>
@@ -573,11 +586,11 @@ function renderAssessment(out) {
     ${shapChart(r.shap_reasons)}
 
     <div class="${ALERT_CLASS[r.risk_level] || 'alert-info'}">
-      <strong>📋 Suggested Action Plan</strong><br />${esc(r.suggested_action)}
+      <strong>Suggested action plan</strong><br />${esc(r.suggested_action)}
     </div>
 
     <div class="alert-low">
-      ✅ Visit saved. Next appointment auto-booked: <strong>${esc(out.next_appointment)}</strong>.
+      Visit saved. Next appointment booked for <strong>${esc(out.next_appointment)}</strong>.
       ${out.email_sent ? `Email sent to ${esc(out.patient_name)}.` : 'No email on file — nothing sent.'}
     </div>`;
 }
@@ -629,14 +642,14 @@ async function renderRecordDetail(patientId) {
   const { patient, visits, prediction } = data;
 
   const predictionBlock = prediction ? `
-    <p><strong>Latest AI Assessment</strong></p>
+    <p><strong>Latest assessment</strong></p>
     <p>${riskBadge(prediction.risk_level)}</p>
-    <div class="metric-label">Risk Score</div>
+    <div class="metric-label">Risk score</div>
     <div class="metric-value">${esc(prediction.risk_score)}%</div>` : '';
 
   const visitTable = visits.length ? `
     <details class="expander">
-      <summary>📋 Visit History Table</summary>
+      <summary>Visit history table</summary>
       <div class="table-wrap">
         <table>
           <thead><tr>
@@ -659,7 +672,7 @@ async function renderRecordDetail(patientId) {
     </details>` : '';
 
   panel.innerHTML = `
-    <div class="grid-split" style="margin-top:1.25rem">
+    <div class="grid-records">
       <div style="order:2">
         ${visits.length
           ? trendChart(visits, patient.full_name) + visitTable
@@ -667,24 +680,23 @@ async function renderRecordDetail(patientId) {
       </div>
       <div style="order:1">
         <div class="metric-card">
-          <div style="font-size:36px;margin-bottom:8px">🤰</div>
-          <div style="font-size:20px;font-weight:700">${esc(patient.full_name)}</div>
+          <div class="avatar avatar-lg">${esc(initials(patient.full_name))}</div>
+          <div style="font-size:1.15rem;font-weight:700">${esc(patient.full_name)}</div>
           <div class="metric-sub">ID: ${esc(patient.patient_id)}</div>
-          <div style="margin-top:10px;font-size:13px;line-height:1.8">
-            📱 ${esc(patient.phone || '—')}<br />
-            ✉️ ${esc(patient.email || '—')}<br />
-            🗓️ Age: ${esc(patient.age)} yrs<br />
-            🤱 ${esc(patient.weeks_pregnant)} weeks pregnant<br />
-            👶 ${esc(patient.prev_pregnancies)} previous pregnancy(ies)<br />
-            ${patient.family_hypertension ? '⚠️ Family hypertension' : ''}
-          </div>
+          <dl class="facts">
+            <dt>Phone</dt><dd>${esc(patient.phone || '—')}</dd>
+            <dt>Email</dt><dd>${esc(patient.email || '—')}</dd>
+            <dt>Age</dt><dd>${esc(patient.age)} years</dd>
+            <dt>Gestation</dt><dd>${esc(patient.weeks_pregnant)} weeks</dd>
+            <dt>Previous pregnancies</dt><dd>${esc(patient.prev_pregnancies)}</dd>
+            ${patient.family_hypertension ? '<dt>Family history</dt><dd>Hypertension</dd>' : ''}
+          </dl>
         </div>
         ${predictionBlock}
       </div>
     </div>
     ${prediction ? `
       <hr class="rule" />
-      <p><strong>🔍 AI Reasoning (SHAP)</strong></p>
       ${shapChart(prediction.shap_reasons)}
       <div class="${ALERT_CLASS[prediction.risk_level] || 'alert-info'}">
         <strong>Action:</strong> ${esc(prediction.suggested_action)}
@@ -712,16 +724,16 @@ async function loadUpcoming() {
     }
     box.innerHTML = list.map((a) => {
       const left = daysUntil(a.scheduled_date);
-      const colour = left <= 1 ? '#ef4444' : left <= 3 ? '#f59e0b' : '#22c55e';
+      const colour = left <= 1 ? '#c0392b' : left <= 3 ? '#b7791f' : '#2f855a';
       return `
         <div class="patient-card">
-          <div class="avatar" style="background:${colour}22">📅</div>
+          <div class="avatar" style="background:${colour}1f;color:${colour}">${esc(initials(a.full_name))}</div>
           <div class="pc-grow">
             <div class="pc-name">${esc(a.full_name)}</div>
             <div class="pc-meta">${esc(a.scheduled_date)} · ${esc(a.reason || '')}</div>
             <div class="pc-note">${esc(a.phone || '')}</div>
           </div>
-          <span class="pill" style="background:${colour}22;color:${colour};border:1.5px solid ${colour}">${left}d</span>
+          <span class="pill" style="background:${colour}1f;color:${colour}">${left}d</span>
         </div>`;
     }).join('');
   } catch (err) {
@@ -745,8 +757,8 @@ async function loadPendingAppointments() {
           </option>`).join('')}
       </select>
       <div class="btn-row">
-        <button class="btn btn-ok" id="btn-attended">✅ Mark Attended</button>
-        <button class="btn btn-danger" id="btn-missed">❌ Mark Missed</button>
+        <button class="btn btn-ok" id="btn-attended">Mark attended</button>
+        <button class="btn btn-danger" id="btn-missed">Mark missed</button>
       </div>`;
 
     const act = async (button, path, kind) => {
@@ -795,7 +807,7 @@ function initAppointments() {
         scheduled_date: fd.get('scheduled_date'),
         reason: fd.get('reason') || 'Antenatal follow-up',
       });
-      $('#book-msg').innerHTML = `<div class="alert-low">✅ ${esc(out.message)}
+      $('#book-msg').innerHTML = `<div class="alert-low">${esc(out.message)}
         ${out.email_sent ? 'Reminder email sent.' : ''}</div>`;
       await loadUpcoming();
       await loadPendingAppointments();
@@ -853,13 +865,13 @@ async function loadAssistant() {
     const status = await api('/api/chat/status');
     if (!status.kb_ready) {
       banner.className = 'kb-banner bad';
-      banner.innerHTML = '⚠️ Knowledge base not built. Run <code>python ingest.py</code> and restart the server.';
+      banner.innerHTML = 'Knowledge base not built. Run <code>python ingest.py</code> and restart the server.';
     } else if (!status.groq_ready) {
       banner.className = 'kb-banner bad';
-      banner.innerHTML = `⚠️ ${status.chunks} chunks indexed, but <code>GROQ_API_KEY</code> is not set on the server.`;
+      banner.innerHTML = `${status.chunks} chunks indexed, but <code>GROQ_API_KEY</code> is not set on the server.`;
     } else {
       banner.className = 'kb-banner ok';
-      banner.innerHTML = `✅ Grounded in <b>${esc(status.source)}</b> — ${status.chunks} verified chunks ·
+      banner.innerHTML = `Grounded in <b>${esc(status.source)}</b> — ${status.chunks} verified chunks ·
                           model <code>${esc(status.model_name)}</code>`;
     }
   } catch (err) {
@@ -965,9 +977,9 @@ async function loadSettings() {
       <div class="markdown">
         <p><strong>Source document:</strong> ${esc(status.source)}</p>
         <p><strong>Indexed chunks:</strong> ${esc(status.chunks)}</p>
-        <p><strong>Vector store:</strong> ChromaDB (cosine) — ${status.kb_ready ? '✅ ready' : '❌ not built'}</p>
+        <p><strong>Vector store:</strong> ChromaDB (cosine) — ${status.kb_ready ? 'ready' : 'not built'}</p>
         <p><strong>Generation:</strong> Groq <code>${esc(status.model_name)}</code> —
-           ${status.groq_ready ? '✅ configured' : '❌ GROQ_API_KEY not set'}</p>
+           ${status.groq_ready ? 'configured' : 'GROQ_API_KEY not set'}</p>
       </div>`;
   } catch (err) {
     box.innerHTML = `<div class="alert-high">${esc(err.message)}</div>`;
@@ -988,7 +1000,7 @@ function initSettings() {
     $('#train-msg').innerHTML = '';
     try {
       const out = await post('/api/model/train', { n_samples: Number($('#train-slider').value) });
-      $('#train-msg').innerHTML = `<div class="alert-low">✅ ${esc(out.message)}</div>`;
+      $('#train-msg').innerHTML = `<div class="alert-low">${esc(out.message)}</div>`;
       setModelStatus(true);
     } catch (err) {
       $('#train-msg').innerHTML = `<div class="alert-high">${esc(err.message)}</div>`;
@@ -1003,7 +1015,7 @@ function initSettings() {
     $('#seed-msg').innerHTML = '';
     try {
       const out = await post('/api/seed', { n_patients: Number($('#seed-slider').value) });
-      $('#seed-msg').innerHTML = `<div class="alert-low">✅ ${esc(out.message)}</div>`;
+      $('#seed-msg').innerHTML = `<div class="alert-low">${esc(out.message)}</div>`;
       await refreshPatients();
     } catch (err) {
       $('#seed-msg').innerHTML = `<div class="alert-high">${esc(err.message)}</div>`;

@@ -69,7 +69,7 @@ python model.py           # train the risk model (also happens automatically on 
 python app.py             # opens http://127.0.0.1:8000  (API docs at /docs)
 ```
 
-The protocol knowledge base (`chroma_db/`) is included. To rebuild it, put the MoH *Basic Obstetric Protocols* PDF in the project folder and run `python ingest.py`.
+To enable the protocol assistant, put the MoH *Basic Obstetric Protocols* PDF in the project folder and run `python ingest.py` once to build the knowledge base (`chroma_db/`). Everything else works without it.
 
 To try the dashboard with demo data, use the **Seed Demo Data** tab in the app (or `POST /api/seed`).
 
