@@ -71,7 +71,9 @@ python model.py           # train the risk model (also happens automatically on 
 python app.py             # opens http://127.0.0.1:8000  (API docs at /docs)
 ```
 
-To enable the protocol assistant, put the MoH *Basic Obstetric Protocols* PDF in the project folder and run `python ingest.py` once to build the knowledge base (`chroma_db/`). Everything else works without it.
+To enable the protocol assistant, run `python ingest.py` once to build the knowledge base (`chroma_db/`) from the protocol PDF in the project folder. Everything else works without it.
+
+The PDF is the Kenya Ministry of Health, *Basic Obstetric Protocols*, 1st edition (Nairobi, January 2026), included as the Ministry allows: it may be reproduced with the source acknowledged, and not for commercial use or profit.
 
 To try the dashboard with demo data, use the **Seed Demo Data** tab in the app (or `POST /api/seed`).
 

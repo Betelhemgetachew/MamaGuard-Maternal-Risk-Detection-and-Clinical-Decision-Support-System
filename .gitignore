@@ -4,6 +4,7 @@ uv.lock
 pyproject.toml
 .env
 *.pdf
+!Basic Obstetric Protocols 2026.pdf
 *.claude
 
 # Knowledge base built locally by ingest.py from the MoH protocol PDF

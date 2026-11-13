@@ -871,10 +871,14 @@ async function loadAssistant() {
   const banner = $('#kb-banner');
   try {
     const status = await api('/api/chat/status');
-    if (!status.kb_ready || !status.groq_ready) {
+    if (!status.kb_ready) {
       banner.className = 'kb-banner bad';
       banner.textContent = 'The protocol assistant is switched off in this demo. The rest of MamaGuard works as normal.';
       setAssistantEnabled(false);
+    } else if (!status.groq_ready) {
+      setAssistantEnabled(true);
+      banner.className = 'kb-banner bad';
+      banner.innerHTML = `Answer generation is off, so the assistant shows the matching passages from <b>${esc(status.source)}</b> instead.`;
     } else {
       setAssistantEnabled(true);
       banner.className = 'kb-banner ok';
