@@ -470,3 +470,7 @@ details.expander > div { padding: 0 1rem 1rem; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Assistant switched off (no knowledge base on this server) */
+.chip:disabled, .chat-input input:disabled, .chat-input button:disabled { opacity: 0.5; cursor: not-allowed; }
+.chip:disabled:hover { border-color: var(--line); color: inherit; background: transparent; }

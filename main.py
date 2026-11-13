@@ -266,7 +266,7 @@ def chat(payload: ChatIn):
     if collection is None:
         raise HTTPException(
             status_code=503,
-            detail="Knowledge base not built. Run `python ingest.py` first.",
+            detail="The protocol assistant is not available on this server.",
         )
 
     hits = retrieve(question, k)

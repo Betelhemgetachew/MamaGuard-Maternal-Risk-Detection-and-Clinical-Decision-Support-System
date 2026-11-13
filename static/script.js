@@ -859,17 +859,24 @@ function appendMessage(role, innerHtml, extraClass = '') {
   return wrap;
 }
 
+function setAssistantEnabled(on) {
+  const input = $('#chat-text');
+  input.disabled = !on;
+  input.placeholder = on ? 'Ask a clinical protocol question…' : 'Not available in this demo';
+  $('#chat-form').querySelectorAll('button').forEach((b) => { b.disabled = !on; });
+  document.querySelectorAll('#chat-log .chip').forEach((c) => { c.disabled = !on; });
+}
+
 async function loadAssistant() {
   const banner = $('#kb-banner');
   try {
     const status = await api('/api/chat/status');
-    if (!status.kb_ready) {
+    if (!status.kb_ready || !status.groq_ready) {
       banner.className = 'kb-banner bad';
-      banner.innerHTML = 'Knowledge base not built. Run <code>python ingest.py</code> and restart the server.';
-    } else if (!status.groq_ready) {
-      banner.className = 'kb-banner bad';
-      banner.innerHTML = `${status.chunks} chunks indexed, but <code>GROQ_API_KEY</code> is not set on the server.`;
+      banner.textContent = 'The protocol assistant is switched off in this demo. The rest of MamaGuard works as normal.';
+      setAssistantEnabled(false);
     } else {
+      setAssistantEnabled(true);
       banner.className = 'kb-banner ok';
       banner.innerHTML = `Grounded in <b>${esc(status.source)}</b> — ${status.chunks} verified chunks ·
                           model <code>${esc(status.model_name)}</code>`;
@@ -883,7 +890,7 @@ async function loadAssistant() {
 function initAssistant() {
   $('#chat-log').addEventListener('click', (event) => {
     const chip = event.target.closest('.chip');
-    if (!chip) return;
+    if (!chip || chip.disabled) return;
     $('#chat-text').value = chip.textContent.trim();
     $('#chat-form').requestSubmit();
   });
