@@ -116,10 +116,15 @@ async def lifespan(app: FastAPI):
         print("[RAG] GROQ_API_KEY not set — /chat will report itself unavailable.")
 
     try:
-        load_model()
+        load_model()  # trains on synthetic data first if no saved model exists
         _state["model_ready"] = True
     except Exception as exc:
         print(f"[MODEL] Not loaded: {type(exc).__name__}: {exc}")
+
+    # Demo deployments: refill an empty database with synthetic patients.
+    if os.getenv("SEED_DEMO", "").lower() in {"1", "true", "yes"} and not db.list_patients():
+        seed_demo(SeedIn(n_patients=int(os.getenv("SEED_DEMO_PATIENTS", "12"))))
+        print("[DEMO] Seeded synthetic demo patients.")
 
     yield
 

@@ -79,6 +79,12 @@ Run the tests:
 python -m unittest discover tests
 ```
 
+## Deploy
+
+The repo includes a `render.yaml` for Render's free plan. In Render choose **New > Blueprint**, pick this repo, and paste a Groq API key when asked (optional; without it the protocol assistant is switched off).
+
+On a fresh server the app trains the model on synthetic data and, because `SEED_DEMO` is on, fills the empty database with synthetic demo patients. The free plan wipes the disk on each restart, so the demo resets to that state every time.
+
 ## Project structure
 
 ```

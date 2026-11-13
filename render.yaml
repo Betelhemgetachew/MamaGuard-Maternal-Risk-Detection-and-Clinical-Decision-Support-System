@@ -1,0 +1,16 @@
+# One-click deploy on Render (free plan): New > Blueprint > pick this repo.
+services:
+  - type: web
+    name: mamaguard
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && (python ingest.py || echo "No protocol PDF, skipping the knowledge base")
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/model/status
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: SEED_DEMO
+        value: "true"
+      - key: GROQ_API_KEY
+        sync: false
