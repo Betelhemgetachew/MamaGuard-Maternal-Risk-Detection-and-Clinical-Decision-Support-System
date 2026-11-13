@@ -50,7 +50,7 @@ STATIC_DIR = BASE_DIR / "static"
 
 # ── Groq / RAG configuration ────────────────────────────────────────────────
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 RETRIEVAL_K = int(os.getenv("RETRIEVAL_K", "5"))
 # Cosine distance ceiling. Chunks further away than this are treated as
 # unrelated and dropped before the prompt is built, so an off-topic question
@@ -319,13 +319,15 @@ def chat(payload: ChatIn):
                 {"role": "user", "content": user_prompt},
             ],
             temperature=0.0,      # deterministic: never paraphrase a dosage
-            max_tokens=900,
+            max_tokens=2000,      # gpt-oss spends part of this budget on reasoning
             top_p=1.0,
+            **({"reasoning_effort": "low"} if GROQ_MODEL.startswith("openai/gpt-oss") else {}),
         )
         answer = (completion.choices[0].message.content or "").strip()
     except Exception as exc:
+        print(f"[RAG] Groq request failed: {type(exc).__name__}: {exc}")
         raise HTTPException(
-            status_code=502, detail=f"Groq request failed: {type(exc).__name__}: {exc}"
+            status_code=502, detail="The answer service is not responding right now. Please try again shortly."
         ) from exc
 
     # The refusal must be exact. A model that hedges around the sentinel still

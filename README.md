@@ -27,7 +27,7 @@ MamaGuard tackles each gap with one component.
 | **Risk assessment** | Classifies each visit as low, mid or high risk and shows the top factors behind the result | XGBoost classifier + SHAP explanations |
 | **Safety override** | Forces "high risk" for severe-range blood pressure (≥160 systolic or ≥110 diastolic), whatever the model says | Rule applied after the model |
 | **Care continuity** | Books the next visit (3 / 14 / 28 days by tier), sends reminders, and alerts nurses after 3 consecutive missed appointments | SQLite + APScheduler (daily 09:00 reminders, 17:00 missed-visit check) + SMTP email |
-| **Protocol assistant** | Answers clinical questions using only the MoH *Basic Obstetric Protocols*, cites the pages, and refuses when the protocol doesn't cover the question | RAG: ChromaDB retrieval + Llama 3.3 70B via Groq |
+| **Protocol assistant** | Answers clinical questions using only the MoH *Basic Obstetric Protocols*, cites the pages, and refuses when the protocol doesn't cover the question | RAG: ChromaDB retrieval + GPT-OSS 120B via Groq |
 | **Dashboard** | Patient registry, visit entry, risk distribution, appointments, email log | FastAPI backend + HTML/CSS/JavaScript frontend |
 
 **Design choice: patients never receive risk scores.** Emails to mothers carry only appointment details and supportive messages. Risk information stays on the clinician dashboard so automated messages can't cause alarm.
