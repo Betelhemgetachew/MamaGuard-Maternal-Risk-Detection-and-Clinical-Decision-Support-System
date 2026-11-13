@@ -1,153 +1,109 @@
-#  MamaGuard- Maternal Risk Detection System
+# MamaGuard: Maternal Risk Detection & Clinical Decision Support
 
-An AI-powered clinical decision support tool for community health workers and nurses. It predicts maternal health risks (Preeclampsia, Gestational Diabetes, Anemia), explains its reasoning, and keeps patients informed via SMS.
+A prototype decision-support tool for antenatal clinics. A nurse records a mother's vitals, and MamaGuard returns a **risk tier with an explanation**, books the **next follow-up automatically**, keeps the mother engaged with **supportive email reminders**, and lets staff ask a **protocol assistant** questions that are answered only from the Kenya Ministry of Health obstetric protocols.
+
+> ⚠️ **Research prototype.** The risk model is trained on synthetic data and has not been clinically validated. It is not for use in patient care.
+
+<!-- Add a screenshot or GIF of the dashboard here: ![MamaGuard dashboard](docs/screenshot.png) -->
 
 ---
 
-##  Architecture
+## The problem
 
-| Layer | Tool | Purpose |
+Many preventable maternal complications in Kenya and similar settings are linked to three gaps in routine antenatal care:
+
+1. **Warning signs are missed.** Rising blood pressure or glucose can go unnoticed in a busy clinic.
+2. **Follow-up breaks down.** Missed appointments are not tracked, so high-risk mothers drop out of care.
+3. **Guidance is hard to reach.** Protocol documents are long, and staff need quick, reliable answers at the point of care.
+
+MamaGuard tackles each gap with one component.
+
+## What it does
+
+| Component | What it does | How |
 |---|---|---|
-|  Brain | XGBoost + SHAP | Risk prediction + explainability |
-| Memory | SQLite + Pandas | Patient records, predictions, appointments |
-| Face | Streamlit + Plotly | Clinical dashboard |
-| Nerve | Africa's Talking | Patient SMS (KE market) |
-| Scheduler | APScheduler | Daily missed-appointment checks |
+| **Risk assessment** | Classifies each visit as low, mid or high risk and shows the top factors behind the result | XGBoost classifier + SHAP explanations |
+| **Safety override** | Forces "high risk" for severe-range blood pressure (≥160 systolic or ≥110 diastolic), whatever the model says | Rule applied after the model |
+| **Care continuity** | Books the next visit (3 / 14 / 28 days by tier), sends reminders, and alerts nurses after 3 consecutive missed appointments | SQLite + APScheduler (daily 09:00 reminders, 17:00 missed-visit check) + SMTP email |
+| **Protocol assistant** | Answers clinical questions using only the MoH *Basic Obstetric Protocols*, cites the pages, and refuses when the protocol doesn't cover the question | RAG: ChromaDB retrieval + Llama 3.3 70B via Groq |
+| **Dashboard** | Patient registry, visit entry, risk distribution, appointments, email log | FastAPI backend + HTML/CSS/JavaScript frontend |
 
----
+**Design choice: patients never receive risk scores.** Emails to mothers carry only appointment details and supportive messages. Risk information stays on the clinician dashboard so automated messages can't cause alarm.
 
-##  Quick Start
+## Technical highlights
 
-### 1. Clone & Install
+- **Dosage-safe chunking for RAG.** A chunk that ends in "give 400" followed by one starting "µg folic acid" would let the assistant quote half a dose. `ingest.py` uses a dosage grammar (mg, µg, IU, mL/hr, mmHg, …) to make sure no chunk boundary ever splits a dose, and it checks every dose from the source PDF against the finished chunks.
+- **Refusal before generation.** If retrieval finds nothing close enough (cosine-distance threshold), the assistant refuses *without calling the LLM*. When the model is called, it runs at temperature 0 and must answer only from the retrieved context.
+- **Explainability.** Each prediction comes with its top 5 SHAP feature contributions, so a nurse can see *why* a visit was flagged.
+- **Feature engineering.** Pulse pressure, mean arterial pressure (MAP), and change in systolic BP and weight since the previous visit.
+- **Mock modes.** Without SMTP or Groq credentials, the app still runs end to end: emails are printed to the terminal and the assistant returns the retrieved protocol passages instead of a generated answer.
 
-```bash
-git clone <repo-url>
-cd Maternal-Risk-Detection-System
-pip install -r requirements.txt
-```
+## Results and limitations
 
-### 2. Configure SMS 
-
-```bash
-cp .env.example .env
-# Edit .env with your Africa's Talking credentials
-# Without credentials the system runs in MOCK mode (SMS printed to terminal)
-```
-
-### 3. Train the AI Model
-
-```bash
-python model.py
-```
-
-Or train from within the app (Settings → Model → Retrain).
-
-### 4. Run the Dashboard
-
-```bash
-streamlit run app.py
-```
-
-Open http://localhost:8501
-
----
-
-##  Features
-
-### Phase 1 — Data Entry with Real-time Validation
-- Smart patient onboarding (ID scan → history baseline)
-- **Live BP/glucose outlier detection** before AI runs (e.g. BP ≥ 160/110 → instant red alert)
-- Mean-imputation for missing fields
-- Derived features: Pulse Pressure, MAP, BP Velocity (change since last visit)
-
-### Phase 2 — AI Brain
-- **Multi-class classifier**: `low risk` / `mid risk` / `high risk`
-- Detects: Preeclampsia, Gestational Diabetes, Gestational Hypertension, Anemia, Borderline Glucose
-- **Velocity of Change**: BP and weight delta since previous visit as features
-- **Ensemble** XGBoost (primary) + RandomForest (fallback)
-- **SHAP Explainability**: bar chart showing which features drove the prediction
-- **WHO-aligned action plan** generated per risk tier
-- Top-3 conditions ranked by probability
-
-### Phase 3 — Feedback Loop
-- **Nurse dashboard**: full SHAP chart + action plan
-- **Patient SMS**: supportive, non-alarming messages (appointment reminders, wellness tips)
-- Post-visit SMS auto-sent after every assessment
-
-### Phase 4 — Long-term Monitoring
-- High-risk patients auto-sorted to top of priority list
-- **Appointment auto-booking**: 3 days (high), 14 days (mid), 28 days (low)
-- **Missed appointment SMS** sent to patient
-- **3 consecutive misses → nurse alert** escalation
-- Daily scheduler: 09:00 reminder job + 17:00 missed-check job
-
----
-
-## Project Structure
-
-```
-maternal_risk_system/
-├── app.py              # Streamlit dashboard (all 5 pages)
-├── model.py            # XGBoost/RandomForest + SHAP prediction engine
-├── database.py         # SQLite schema + all CRUD operations
-├── sms_service.py      # Africa's Talking integration + mock mode
-├── scheduler.py        # APScheduler daily jobs
-├── data_generator.py   # Synthetic maternal health data (mirrors Kaggle dataset)
-├── requirements.txt
-├── .env.example
-└── README.md
-```
-
----
-
-##  Using Real Kaggle Data
-
-1. Download from https://www.kaggle.com/datasets/csafrit2/maternal-health-risk-data
-2. Place `maternal_health_risk_data.csv` in the project folder
-3. In `model.py`, replace `generate_maternal_dataset()` with:
-
-```python
-df = pd.read_csv("maternal_health_risk_data.csv")
-```
-
----
-
-## SMS Templates
-
-| Type | Recipient | Content |
-|---|---|---|
-| `post_visit_support` | Patient | Wellness tips + next appointment date |
-| `appointment_reminder` | Patient | Friendly reminder 3 days before |
-| `missed_appointment` | Patient | Supportive rescheduling prompt |
-| `nurse_alert` | Nurse | ⚠️ 3+ missed appointments escalation |
-| `wellness_tip` | Patient | Daily health tip |
-
----
-
-##  Privacy & Compliance
-
-- **No clinical risk details sent to patients** — only supportive, positive messages
-- **SQLite stays local** — no cloud upload of patient records
-- Architecture supports **Federated Learning** extension (train across clinics without sharing raw data)
-- HIPAA/Kenya Data Protection Act aligned
-
----
-
-##  Model Performance (on synthetic data)
+On a held-out 20% split of **synthetic** data (1,500 records; body temperature in °C, matching the clinic form), the XGBoost model reaches:
 
 | Class | Precision | Recall | F1 |
 |---|---|---|---|
-| High Risk | ~0.89 | ~0.87 | ~0.88 |
-| Mid Risk  | ~0.82 | ~0.81 | ~0.82 |
-| Low Risk  | ~0.91 | ~0.93 | ~0.92 |
+| High risk | 0.91 | 0.95 | 0.93 |
+| Mid risk | 0.86 | 0.84 | 0.85 |
+| Low risk | 0.93 | 0.93 | 0.93 |
+| **Accuracy** | | | **0.90** |
 
-> On real Kaggle data XGBoost achieves ~96% accuracy.
+These numbers show the pipeline works. They are **not** evidence of clinical performance:
 
----
+- The training data is generated from hand-picked distributions for each risk class, so the classes are easier to separate than real patients would be.
+- Proteinuria and family history are simulated, and the visit-to-visit change features are always zero in training, so the model has not learned to use BP or weight trends yet.
+- "Likely conditions" (e.g. preeclampsia) are a fixed list for each risk tier, not separate predictions.
 
-##  Extending the System
+**Next steps:** retrain on the real [Maternal Health Risk dataset](https://archive.ics.uci.edu/dataset/863/maternal+health+risk) (UCI/Kaggle, collected in Bangladesh) and report cross-validated results; validate with clinicians against WHO and MoH guidance; add longitudinal data so the trend features carry signal.
 
-- **FastAPI backend**: wrap `model.predict()` in an `/assess` POST endpoint
-- **Docker**: `docker build -t mamagaurd .` + `docker run -p 8501:8501 mamagaard`
-- **Redis + Celery**: replace APScheduler for production-scale task queuing
-- **Federated Learning**: use PySyft to train across clinic nodes
+## Run it locally
+
+```bash
+git clone https://github.com/Betelhemgetachew/MamaGuard-Maternal-Risk-Detection-and-Clinical-Decision-Support-System.git
+cd MamaGuard-Maternal-Risk-Detection-and-Clinical-Decision-Support-System
+pip install -r requirements.txt
+
+cp .env.example .env      # optional: add GROQ_API_KEY and SMTP settings
+python model.py           # train the risk model (also happens automatically on first run)
+python app.py             # opens http://127.0.0.1:8000  (API docs at /docs)
+```
+
+The protocol knowledge base (`chroma_db/`) is included. To rebuild it, put the MoH *Basic Obstetric Protocols* PDF in the project folder and run `python ingest.py`.
+
+To try the dashboard with demo data, use the **Seed Demo Data** tab in the app (or `POST /api/seed`).
+
+Run the tests:
+
+```bash
+python -m unittest discover tests
+```
+
+## Project structure
+
+```
+├── app.py               # Launcher: checks setup, starts the server
+├── main.py              # FastAPI backend: patients, visits, appointments, model, /chat
+├── model.py             # Feature engineering, XGBoost training, SHAP explanations
+├── ingest.py            # Protocol PDF → dosage-safe chunks → ChromaDB
+├── database.py          # SQLite schema and queries
+├── scheduler.py         # Daily reminder and missed-appointment jobs
+├── email_service.py     # SMTP email with mock mode
+├── data_generator.py    # Synthetic patients and visit histories
+├── static/              # Frontend (HTML, CSS, JavaScript)
+├── tests/
+└── docs/                # Concept note and system design
+```
+
+## Privacy
+
+- Patient records are stored in a local SQLite database, and no patient data is uploaded to the cloud. The protocol assistant only sends the clinician's question and protocol passages to the LLM, never patient records.
+- The repository contains synthetic data only.
+- A real deployment would need a compliance review under Kenya's Data Protection Act, 2019, plus access control and encryption at rest. These are not implemented in this prototype.
+
+## Author
+
+**Betelhem Getachew Kebede**: Data Science & Analytics, USIU-Africa
+<!-- Add your LinkedIn / portfolio link here -->
+
+Licensed under the terms in [LICENSE](LICENSE).

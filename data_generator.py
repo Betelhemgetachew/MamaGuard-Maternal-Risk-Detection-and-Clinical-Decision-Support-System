@@ -2,7 +2,7 @@
 """
 Data Generator for Maternal Health Risk System
 Generates synthetic data matching the Kaggle 'Maternal Health Risk Data' distribution.
-Columns: Age, SystolicBP, DiastolicBP, BS (Blood Sugar mmol/L), BodyTemp (F), HeartRate, RiskLevel
+Columns: Age, SystolicBP, DiastolicBP, BS (Blood Sugar mmol/L), BodyTemp (°C), HeartRate, RiskLevel
 """
 
 import random
@@ -30,7 +30,7 @@ def generate_maternal_dataset(n_samples: int = 1200) -> pd.DataFrame:
             systolic    = int(np.clip(np.random.normal(115, 8), 90, 135))
             diastolic   = int(np.clip(np.random.normal(76, 7), 60, 90))
             bs          = round(np.clip(np.random.normal(7.5, 1.2), 6.0, 11.0), 1)
-            body_temp   = round(np.clip(np.random.normal(98.2, 0.6), 97.0, 99.5), 1)
+            body_temp   = round(np.clip(np.random.normal(36.8, 0.3), 36.1, 37.5), 1)
             heart_rate  = int(np.clip(np.random.normal(76, 8), 60, 100))
 
         elif risk_level == "mid risk":
@@ -38,7 +38,7 @@ def generate_maternal_dataset(n_samples: int = 1200) -> pd.DataFrame:
             systolic    = int(np.clip(np.random.normal(130, 10), 110, 155))
             diastolic   = int(np.clip(np.random.normal(85, 8), 70, 100))
             bs          = round(np.clip(np.random.normal(8.8, 1.5), 7.0, 13.0), 1)
-            body_temp   = round(np.clip(np.random.normal(98.7, 0.8), 97.5, 101.0), 1)
+            body_temp   = round(np.clip(np.random.normal(37.1, 0.45), 36.4, 38.3), 1)
             heart_rate  = int(np.clip(np.random.normal(82, 9), 65, 105))
 
         else:  # high risk
@@ -46,7 +46,7 @@ def generate_maternal_dataset(n_samples: int = 1200) -> pd.DataFrame:
             systolic    = int(np.clip(np.random.normal(148, 15), 120, 200))
             diastolic   = int(np.clip(np.random.normal(95, 12), 80, 130))
             bs          = round(np.clip(np.random.normal(11.5, 2.0), 9.0, 19.0), 1)
-            body_temp   = round(np.clip(np.random.normal(100.1, 1.2), 98.0, 103.5), 1)
+            body_temp   = round(np.clip(np.random.normal(37.8, 0.65), 36.7, 39.7), 1)
             heart_rate  = int(np.clip(np.random.normal(90, 12), 70, 120))
 
         records.append(
@@ -91,7 +91,7 @@ def generate_patient_history(
                 "SystolicBP": int(base_systolic + drift + np.random.normal(0, 4)),
                 "DiastolicBP": int((base_systolic * 0.65) + drift * 0.5 + np.random.normal(0, 3)),
                 "BS": round(7.5 + i * 0.3 + np.random.normal(0, 0.5), 1),
-                "BodyTemp": round(98.2 + np.random.normal(0, 0.5), 1),
+                "BodyTemp": round(36.8 + np.random.normal(0, 0.3), 1),
                 "HeartRate": int(76 + np.random.normal(0, 5)),
                 "Weight_kg": round(65 + i * 0.8 + np.random.normal(0, 1.5), 1),
             }

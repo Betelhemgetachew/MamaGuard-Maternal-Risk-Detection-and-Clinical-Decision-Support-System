@@ -212,7 +212,7 @@ def explain_prediction(clf, X_row: pd.DataFrame, le: LabelEncoder) -> dict:
         # Fallback: feature_importance × normalised distance from safe mean
         safe_means = {
             "Age": 28, "SystolicBP": 115, "DiastolicBP": 75,
-            "BS": 7.5, "BodyTemp": 98.2, "HeartRate": 76,
+            "BS": 7.5, "BodyTemp": 36.8, "HeartRate": 76,
             "Pulse_Pressure": 40, "MAP": 90,
             "BP_Velocity": 0, "Weight_Velocity": 0,
             "Family_Hypertension": 0, "Proteinuria": 0,
